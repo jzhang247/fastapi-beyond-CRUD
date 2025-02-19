@@ -46,10 +46,10 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build images with docker-compose
-        run: docker-compose build
+        run: docker compose build
 
       - name: Push images with docker-compose
-        run: docker-compose push
+        run: docker compose push
 
       - name: Close PR if Tests Fail
         if: failure()
