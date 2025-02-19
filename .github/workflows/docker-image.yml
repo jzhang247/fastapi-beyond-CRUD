@@ -1,4 +1,4 @@
-name: PR Check and build
+name: PR Check
 
 on:
   pull_request_target:
@@ -17,7 +17,7 @@ jobs:
       - name: Run Commitlint
         uses: wagoid/commitlint-github-action@v5
 
-      - name: Run tests
+      - name: Docker Test
         run: |
           docker compose -f compose-test.yml up
 
@@ -35,16 +35,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Docker Build
-        run: docker compose build
-        env:
-          SEMVER_TAG: "latest"
-
-      - name: Docker Push
-        run: docker compose push
-        env:
-          SEMVER_TAG: "latest"
 
       - name: Close PR if Tests Fail
         if: failure()
