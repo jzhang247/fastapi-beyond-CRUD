@@ -14,14 +14,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
-      - name: Run Commitlint (Latest Commit)
+      - name: Run Commitlint
         uses: wagoid/commitlint-github-action@v5
-        with:
-          firstParent: true
 
       - name: Run tests
         run: |
           docker compose -f compose-test.yml up
+
+      - name: Calculate SemVer Tag
+        id: semver
+        uses: smlx/ccv@v0.7.3  # Or another semver action of your choice
+        with:
+          write-tag: false   # Set to true if you want the action to push the new tag
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Build
+        env:
+          SEMVER_TAG: ${{ steps.semver.outputs.version-string }}
+        run: docker compose build
+
+      - name: Docker Push
+        run: docker compose push
+
+      - name: Close PR if Tests Fail
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr close "$PR_NUMBER" --repo "$REPO"
 
       - name: Send Email Notification if Tests Fail
         if: failure()
@@ -38,24 +65,3 @@ jobs:
             PR #${{ github.event.pull_request.number }} Closed
             Repository: ${{ github.repository }}
             PR Link: ${{ github.event.pull_request.html_url }}
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Build images with docker-compose
-        run: docker compose build
-
-      - name: Push images with docker-compose
-        run: docker compose push
-
-      - name: Close PR if Tests Fail
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
-        run: |
-          gh pr close "$PR_NUMBER" --repo "$REPO"
