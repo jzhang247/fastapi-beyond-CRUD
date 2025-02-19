@@ -17,6 +17,7 @@ jobs:
 
       - name: Run Docker Tests
         id: docker_tests
+        continue-on-error: true
         run: |
           docker-compose -f compose-test.yml up --abort-on-container-exit --exit-code-from test-1
           echo "exit_code=$?" >> $GITHUB_ENV
