@@ -3,8 +3,11 @@ version: "3.0"
 services:
   web:
     build: .
+    image: zhangjungeac/fastapi-beyond-crud-web:latest
+
     volumes:
       - .:/app
+
     environment: 
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -55,7 +58,7 @@ services:
 
   celery:
     build: .
-
+    image: zhangjungeac/fastapi-beyond-crud-celery:latest
     command: celery -A src.celery_tasks.c_app worker --loglevel=INFO
 
     volumes:
