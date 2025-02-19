@@ -3,7 +3,7 @@ version: "3.0"
 services:
   web:
     build: .
-    image: zhangjungeac/fastapi-beyond-crud-web:${SEMVER_TAG}
+    image: zhangjungeac/fastapi-beyond-crud-web:latest
 
     volumes:
       - .:/app
@@ -58,7 +58,7 @@ services:
 
   celery:
     build: .
-    image: zhangjungeac/fastapi-beyond-crud-celery:${SEMVER_TAG}
+    image: zhangjungeac/fastapi-beyond-crud-celery:latest
     command: celery -A src.celery_tasks.c_app worker --loglevel=INFO
 
     volumes:
