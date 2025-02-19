@@ -19,7 +19,7 @@ jobs:
           docker compose -f compose-test.yml up
 
       - name: Run Commitlint (Latest Commit)
-        uses: cycjimmy/commitlint-action@v3
+        uses: wagoid/commitlint-github-action@v5
         with:
           firstParent: true
 
