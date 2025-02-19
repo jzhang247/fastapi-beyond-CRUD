@@ -37,9 +37,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Docker Build
-        env:
-          SEMVER_TAG: latest
         run: docker compose build
+        env:
+          SEMVER_TAG: "latest"
 
       - name: Docker Push
         run: docker compose push
