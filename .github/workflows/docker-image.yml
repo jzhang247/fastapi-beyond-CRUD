@@ -43,6 +43,8 @@ jobs:
 
       - name: Docker Push
         run: docker compose push
+        env:
+          SEMVER_TAG: "latest"
 
       - name: Close PR if Tests Fail
         if: failure()
