@@ -15,32 +15,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Docker Test
+      - name: Run Docker Tests
+        id: docker_tests
         run: |
-          docker compose -f compose-test.yml up
-        continue-on-error: false 
+          docker-compose -f compose-test.yml up --abort-on-container-exit --exit-code-from test-1
+          echo "exit_code=$?" >> $GITHUB_ENV
 
       - name: Docker Login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        continue-on-error: false 
+        if: env.exit_code == '0'
 
       - name: Docker Build
-        run: docker compose build
+        run: docker-compose build
         env:
           SEMVER_TAG: "latest"
-        continue-on-error: false 
+        if: env.exit_code == '0'
 
       - name: Docker Push
-        run: docker compose push
+        run: docker-compose push
         env:
           SEMVER_TAG: "latest"
-        continue-on-error: false 
+        if: env.exit_code == '0'
 
       - name: Send Email Notification if Tests Fail
-        if: failure()
+        if: env.exit_code != '0'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.ethereal.email
@@ -53,4 +54,3 @@ jobs:
           body: |
             Nightly build failed
             Repository: ${{ github.repository }}
-
