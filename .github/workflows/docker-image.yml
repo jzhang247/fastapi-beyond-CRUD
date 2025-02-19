@@ -27,6 +27,9 @@ jobs:
         with:
           write-tag: false   # Set to true if you want the action to push the new tag
 
+      - name: Debug SemVer Output
+        run: echo SemVerTag: ${{ steps.semver.outputs.version-string }}
+
       - name: Docker Login
         uses: docker/login-action@v2
         with:
