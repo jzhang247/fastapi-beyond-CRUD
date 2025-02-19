@@ -1,4 +1,4 @@
-name: Prevent PR if Tests Fail and Notify via Email
+name: PR Check
 
 on:
   pull_request_target:
