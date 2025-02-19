@@ -59,3 +59,4 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           gh pr close "$PR_NUMBER" --repo "$REPO"
+
